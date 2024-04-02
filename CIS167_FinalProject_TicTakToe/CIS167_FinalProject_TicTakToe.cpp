@@ -7,7 +7,7 @@
 #include <cwchar>
 #include <Windows.h>
 using namespace std;
-//hel
+//hello
 struct Position{
     int x;
     int y;
