@@ -6,6 +6,7 @@
 #include <conio.h>
 #include <cwchar>
 #include <Windows.h>
+#include <random>
 using namespace std;
 //hello
 struct Position{
@@ -33,39 +34,77 @@ int main()
     showBoard(board);
 
     while (!gameOver) {
-        playerTurn(board);
+        if (!gameOver) { playerTurn(board); }
         gameOver = checkGameState(board);
         if (!gameOver) { aiTurn(board); }
         gameOver = checkGameState(board);
         
     }
-  showBoard(board);
+   showBoard(board);
+   checkGameState(board);
     
     
 }
 
 bool checkGameState(string b[3][3]) {
+    bool emptySpace = false;
+
+      //checks for any empty spaces on the board
+    for (int i = 0; i < 9 && !emptySpace; i++) {
+        if (b[0][i] == "-") {
+            emptySpace = true;
+        }
+        else {
+            emptySpace = false;
+        }
+
+    }
+
+
     for (int i = 0; i < 3; i++) {
         //Checks for all vertical winstates
-        if (b[0][i] == "x" && b[1][i] == "x" && b[2][i] == "x" || b[0][i] == "o" && b[1][i] == "o" && b[2][i] == "o") {
+        if (b[0][i] == "x" && b[1][i] == "x" && b[2][i] == "x")  {
+            cout << "\nYou won!\n";
+            return true;          
+        }
+        if (b[0][i] == "o" && b[1][i] == "o" && b[2][i] == "o") {
+            cout << "\nThe AI has won!";
             return true;
         }
+          
         //checks for all horizontal winstates
-        if (b[i][0] == "x" && b[i][1] == "x" && b[i][2] == "x" || b[i][0] == "o" && b[i][1] == "o" && b[i][2] == "o") {
+        if (b[i][0] == "x" && b[i][1] == "x" && b[i][2] == "x") {
+            cout << "\nYou won!\n";
+            return true;          
+        }
+        if (b[i][0] == "o" && b[i][1] == "o" && b[i][2] == "o") {
+            cout << "\nThe AI has won!";
             return true;
         }
     }
     //checks for slanted winstates
-    if (b[0][0] == "x" && b[1][1] == "x" && b[2][2] == "x" || b[0][0] == "o" && b[1][1] == "o" && b[2][2] == "o") { return true; }
-    if (b[2][0] == "x" && b[1][1] == "x" && b[0][2] == "x" || b[2][0] == "o" && b[1][1] == "o" && b[0][2] == "o") { return true; }
+    if (b[0][0] == "x" && b[1][1] == "x" && b[2][2] == "x") { cout << "\nYou won!\n"; return true; }
+    if (b[0][0] == "o" && b[1][1] == "o" && b[2][2] == "o") { cout << "\nThe AI has won!\n"; return true; }
+    if (b[2][0] == "x" && b[1][1] == "x" && b[0][2] == "x") { cout << "\nYou won!\n"; return true; }
+    if (b[2][0] == "o" && b[1][1] == "o" && b[0][2] == "o") { cout << "\nThe AI has won!\n"; return true; }
 
+    // If none of the the other win conditions have been met
+    // and there are no empty spaces the game is tied
+    if (!emptySpace) {
+        cout << "\nThe game is tied\n";
+        return true;
+    }
 
     return false;
 }
 
 void aiTurn(string b[3][3]) {
-    int x = rand() % 3;
-    int y = rand() % 3;
+    random_device rd; // obtain a random number from hardware
+    mt19937 gen(rd()); // seed the generator
+    uniform_int_distribution<> distr(0, 2); // define the range
+
+    int x = distr(gen);
+    int y = distr(gen);
 
     if (b[y][x] != "-") {
         aiTurn(b);
@@ -122,7 +161,7 @@ void playerTurn(string b[3][3]) {
 void showBoard(string b[3][3]){
     system("cls");
     
-    
+    cout << "=============\n";
     for (int i = 0; i != 9; i++) {
         cout << b[0][i] <<  setw(2);
         if (i == 2 || i == 5){
@@ -130,7 +169,7 @@ void showBoard(string b[3][3]){
         }
 
     }
-    cout << endl << "=============";
+    cout << "\n=============";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
