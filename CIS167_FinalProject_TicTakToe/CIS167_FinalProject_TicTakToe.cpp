@@ -110,10 +110,10 @@ int miniMax(string b[3][3], int depth, bool maximizing) {
     cout << "Enter mini max depth" << depth << endl;
     //if game over stop the loop
     //showBoard(b);
-    cout << "optimal Move is: " << bm.y << bm.x << " for player\n";
+    /*cout << "optimal Move is: " << bm.y << bm.x << " for player\n";
     cout << "optimal Move is: " << aibm.y << aibm.x << " for ai\n";
     cout << "\nThe game state is: " << checkGameState(b) << "\n" << "depth" << depth << endl;
-    cout << "click anykey to continue\n";
+    cout << "click anykey to continue\n";*/
     //char stop = _getch();
     if (checkGameState(b) != 999) {
         return checkGameState(b);
@@ -310,6 +310,8 @@ void showBoard(string b[3][3]){
         }
 
     }
+    cout << "\noptimal Move is: " << bm.y << bm.x << " for ai\n";
+    cout << "optimal Move is: " << aibm.y << aibm.x << " for player\n";
     cout << "\n=============";
 }
 
