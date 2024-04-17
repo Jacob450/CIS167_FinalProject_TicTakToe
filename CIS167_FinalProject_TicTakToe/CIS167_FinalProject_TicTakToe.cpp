@@ -31,7 +31,7 @@ void showBoard(string b[3][3]);
 void playerTurn(string b[3][3]);
 int checkGameState(string b[3][3]);
 void aiTurnRand(string b[3][3]);
-void miniMaxStart(string b[3][3]);
+void miniMaxStart(string b[3][3], bool);
 void aiTurn(string b[3][3], int r, int c);
 int miniMax(string b[3][3], int depth, bool maximizing);
 void copyArray(string c[3][3], string b[3][3]);
@@ -43,28 +43,31 @@ int main()
     belowme = "-";
     pos.x = 0;
     pos.y = 0;
-    
+    bool pTurn;
+    cout << "Whos turn do youu want it to be?";
+    cin >> pTurn; 
+    cout << pTurn;
+    char stop = _getch();
+
 
     string board[3][3] = { "-", "-", "-",
                             "-", "-", "-",
                             "-", "-", "-", };
    
+
+
     showBoard(board);
 
-    while (checkGameState(board) == 999) {
-        
-        playerTurn(board);
-        
-       
-        
-        miniMaxStart(board);
-
-        
-        
-       
-        
+    while (checkGameState(board) == 999) {       
+        playerTurn(board);             
+        if (checkGameState(board) == 999) {
+            miniMaxStart(board, pTurn);
+        }                         
     }
+
+
    showBoard(board);
+
    if (checkGameState(board) == -1) { cout << "You lost"; }
    if (checkGameState(board) == 0) { cout << "The game is tied"; }
    //This should never happen
@@ -87,7 +90,7 @@ void aiTurn(string b[3][3],int r,int c) {
     b[r][c] = 'o';
 }
 
-void miniMaxStart(string b[3][3]) {
+void miniMaxStart(string b[3][3], bool turn) {
     int row, col;
     int bestR;
     int bestC;
@@ -114,7 +117,9 @@ void miniMaxStart(string b[3][3]) {
             }
         }
     }
+    
     aiTurn(b, bestR, bestC);
+    
 }
 
 int miniMax(string b[3][3], int depth, bool maximizing) {
