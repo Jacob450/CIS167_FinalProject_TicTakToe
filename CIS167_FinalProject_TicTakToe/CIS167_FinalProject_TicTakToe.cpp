@@ -15,39 +15,31 @@ struct Position{
     int y;
 };
 Position pos;
-struct BestMove {
-    int x;
-    int y;
 
-};
 
-struct aiBestMove {
-    int x;
-    int y;
-};
-aiBestMove aibm;
-BestMove bm;
+int getTurn();
 void showBoard(string b[3][3]);
 void playerTurn(string b[3][3]);
 int checkGameState(string b[3][3]);
-void aiTurnRand(string b[3][3]);
-void miniMaxStart(string b[3][3], bool);
+int aiTurnRand();
+void miniMaxStart(string b[3][3]);
 void aiTurn(string b[3][3], int r, int c);
 int miniMax(string b[3][3], int depth, bool maximizing);
-void copyArray(string c[3][3], string b[3][3]);
+
 string belowme;
 bool gameOver;
 
 int main()
 {
     belowme = "-";
-    pos.x = 0;
-    pos.y = 0;
-    bool pTurn;
-    cout << "Whos turn do youu want it to be?";
-    cin >> pTurn; 
-    cout << pTurn;
-    char stop = _getch();
+    pos.x = 1;
+    pos.y = 1;
+    //1 is player turn
+    //2 is ai turn
+    //3 is random
+    int turn;
+    
+    turn = getTurn();
 
 
     string board[3][3] = { "-", "-", "-",
@@ -57,46 +49,72 @@ int main()
 
 
     showBoard(board);
-
-    while (checkGameState(board) == 999) {       
+    //Game loop if the players turn is first
+    while (checkGameState(board) == 999 && turn == 1) {       
         playerTurn(board);             
         if (checkGameState(board) == 999) {
-            miniMaxStart(board, pTurn);
+            miniMaxStart(board);
         }                         
     }
 
+    //Game loop if ai goes first 
+    while (checkGameState(board) == 999 && turn == 2) {
 
+        
+           miniMaxStart(board);
+           if (checkGameState(board) == 999) {
+               playerTurn(board);
+           }
+    }
+
+
+   //End Game checks
    showBoard(board);
-
-   if (checkGameState(board) == -1) { cout << "You lost"; }
+   if (checkGameState(board) == 1) { cout << "You lost"; }
    if (checkGameState(board) == 0) { cout << "The game is tied"; }
    //This should never happen
-   if (checkGameState(board) == 1) { cout << "you won"; }
+   if (checkGameState(board) == -1) { cout << "you won"; }
 
+   //ask to play again
+   cout << "\n Enter Y ot y to play again otherwise enter any key to continue\n";
+   char playAgain = _getch();
+   if (playAgain == 'Y' || playAgain == 'y') {
+       system("cls");
+       main();
+   }
     
     
 }
-void copyArray(string c[3][3], string b[3][3]) {
+int getTurn() {
+    cout << "Welome to Tic Tac Toe!\nWho should make the  first move?\n==============================\n";
+    cout << "1 - player goes first\n2 - AI goes first\n3 - Random\n";
+    int turn = 9;
 
-    for (int row = 0; row < 3; row++) {
-        for (int col = 0; col < 3; col++) {
-            c[row][col] = b[row][col];
-        }
+    while (turn != 1 && turn != 2 && turn != 3) {
+
+        cin >> turn;
+        cout << "Invalid input try again\n";
     }
-
+    if (turn == 3) {
+        turn = aiTurnRand();
+        return turn;
+    }
+    return turn;
 }
 
 void aiTurn(string b[3][3],int r,int c) {
+
     b[r][c] = 'o';
+    showBoard(b);
+    Sleep(250);
 }
 
-void miniMaxStart(string b[3][3], bool turn) {
+void miniMaxStart(string b[3][3]) {
     int row, col;
     int bestR;
     int bestC;
     int bestscore = INT32_MIN;
-    //string copy[3][3];
-    //copyArray(copy, b);
+  
     
     for (row = 0; row < 3; row++) {
         for (col = 0; col < 3; col++) {
@@ -104,15 +122,12 @@ void miniMaxStart(string b[3][3], bool turn) {
                 b[row][col] = "o";
                 int score = miniMax(b, 0, false);
                 b[row][col] = "-";
-                cout << "optimal Move is: " << bm.y << bm.x << " for ai\n";
-                
-
+               
                 if (score > bestscore) {
                     bestscore = score;
                     bestR = row;
                     bestC = col;
-                    cout << "optimal for Player move changed to " << bm.y << bm.x << " at depth "<< endl;
-                    cout << "bestscore: " << bestscore << endl;
+                   
                 }
             }
         }
@@ -123,14 +138,7 @@ void miniMaxStart(string b[3][3], bool turn) {
 }
 
 int miniMax(string b[3][3], int depth, bool maximizing) {
-    //cout << "Enter mini max depth" << depth << endl;
-    //if game over stop the loop
-    //showBoard(b);
-  /* cout << "optimal Move is: " << bm.y << bm.x << " for player\n";
-    cout << "optimal Move is: " << aibm.y << aibm.x << " for ai\n";
-    cout << "\nThe game state is: " << checkGameState(b) << "\n" << "depth" << depth << endl;*/
- 
-    //char stop = _getch();
+    
     if (checkGameState(b) != 999) {
         return checkGameState(b);
     }
@@ -147,10 +155,7 @@ int miniMax(string b[3][3], int depth, bool maximizing) {
                 //determine if spot is open
                 if (b[row][col] == "-") {
                     b[row][col] = "o";
-
-                    //string copy[3][3];
-                    //copyArray(copy, b);
-
+                   
                     int score = miniMax(b, depth + 1, false);
                     b[row][col] = "-";
                     if (score > bestscore) {
@@ -177,17 +182,12 @@ int miniMax(string b[3][3], int depth, bool maximizing) {
                 if (b[row][col] == "-") {
                     b[row][col] = "x";
 
-                    //string copy[3][3];
-                    //copyArray(copy, b);
-
-
                     int score = miniMax(b, depth + 1, true);
                     b[row][col] = "-";
 
                     if (score < bestscore) {
                         bestscore = score;
-                        
-                       
+                                              
                     }
 
                 }
@@ -254,20 +254,15 @@ int checkGameState(string b[3][3]) {
     return 999;
 }
 
-void aiTurnRand(string b[3][3]) {
+int aiTurnRand() {
     random_device rd; // obtain a random number from hardware
     mt19937 gen(rd()); // seed the generator
-    uniform_int_distribution<> distr(0, 2); // define the range
+    uniform_int_distribution<> distr(1, 2); // define the range
 
     int x = distr(gen);
-    int y = distr(gen);
+   
 
-    if (b[y][x] != "-") {
-        aiTurnRand(b);
-    }
-    else {
-        b[y][x] = 'o';
-    }
+    return x;
 }
 
 void playerTurn(string b[3][3]) {
@@ -324,10 +319,8 @@ void showBoard(string b[3][3]){
             cout << "\n";
         }
 
-    }
-    cout << "\noptimal Move is: " << bm.y << bm.x << " for ai\n";
-    
-    cout << "\n=============";
+    }    
+    cout << "\n=============\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
