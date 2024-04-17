@@ -76,7 +76,7 @@ int main()
    if (checkGameState(board) == -1) { cout << "you won"; }
 
    //ask to play again
-   cout << "\n Enter Y ot y to play again otherwise enter any key to continue\n";
+   cout << "\n Enter Y ot y to play again otherwise hit any key to continue\n";
    char playAgain = _getch();
    if (playAgain == 'Y' || playAgain == 'y') {
        system("cls");
