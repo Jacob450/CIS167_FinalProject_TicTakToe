@@ -59,7 +59,7 @@ int main()
         
         miniMaxStart(board);
 
-        aiTurn(board, bm.y, bm.x);
+        
         
        
         
@@ -67,7 +67,7 @@ int main()
    showBoard(board);
    if (checkGameState(board) == -1) { cout << "You lost"; }
    if (checkGameState(board) == 0) { cout << "The game is tied"; }
-   //This will never happen
+   //This should never happen
    if (checkGameState(board) == 1) { cout << "you won"; }
 
     
@@ -89,31 +89,42 @@ void aiTurn(string b[3][3],int r,int c) {
 
 void miniMaxStart(string b[3][3]) {
     int row, col;
+    int bestR;
+    int bestC;
     int bestscore = INT32_MIN;
-    string copy[3][3];
-    copyArray(copy, b);
+    //string copy[3][3];
+    //copyArray(copy, b);
+    
     for (row = 0; row < 3; row++) {
         for (col = 0; col < 3; col++) {
-            if (copy[row][col] == "-") {
-
-                int score = miniMax(copy, 0, false);
-                
+            if (b[row][col] == "-") {
+                b[row][col] = "o";
+                int score = miniMax(b, 0, false);
+                b[row][col] = "-";
                 cout << "optimal Move is: " << bm.y << bm.x << " for ai\n";
-                cout << "optimal Move is: " << aibm.y << aibm.x << " for player\n";
+                
 
+                if (score > bestscore) {
+                    bestscore = score;
+                    bestR = row;
+                    bestC = col;
+                    cout << "optimal for Player move changed to " << bm.y << bm.x << " at depth "<< endl;
+                    cout << "bestscore: " << bestscore << endl;
+                }
             }
         }
     }
+    aiTurn(b, bestR, bestC);
 }
 
 int miniMax(string b[3][3], int depth, bool maximizing) {
-    cout << "Enter mini max depth" << depth << endl;
+    //cout << "Enter mini max depth" << depth << endl;
     //if game over stop the loop
     //showBoard(b);
-    /*cout << "optimal Move is: " << bm.y << bm.x << " for player\n";
+  /* cout << "optimal Move is: " << bm.y << bm.x << " for player\n";
     cout << "optimal Move is: " << aibm.y << aibm.x << " for ai\n";
-    cout << "\nThe game state is: " << checkGameState(b) << "\n" << "depth" << depth << endl;
-    cout << "click anykey to continue\n";*/
+    cout << "\nThe game state is: " << checkGameState(b) << "\n" << "depth" << depth << endl;*/
+ 
     //char stop = _getch();
     if (checkGameState(b) != 999) {
         return checkGameState(b);
@@ -130,19 +141,17 @@ int miniMax(string b[3][3], int depth, bool maximizing) {
             for (col = 0; col < 3; col++) {
                 //determine if spot is open
                 if (b[row][col] == "-") {
-                    b[row][col] = "x";
+                    b[row][col] = "o";
 
-                    string copy[3][3];
-                    copyArray(copy, b);
+                    //string copy[3][3];
+                    //copyArray(copy, b);
 
-                    int score = miniMax(copy, depth + 1, false);
-
+                    int score = miniMax(b, depth + 1, false);
+                    b[row][col] = "-";
                     if (score > bestscore) {
                         bestscore = score;
-                        bm.y = row;
-                        bm.x = col;
-                        cout << "optimal for Player move changed to " << bm.y << bm.x << " at depth " << depth << endl;
-                        cout << "bestscore: " << bestscore << endl;
+                       
+                        
                     }
 
                 }
@@ -161,18 +170,19 @@ int miniMax(string b[3][3], int depth, bool maximizing) {
             for (col = 0; col < 3; col++) {
                 //determine if spot is open
                 if (b[row][col] == "-") {
-                    b[row][col] = "o";
+                    b[row][col] = "x";
 
-                    string copy[3][3];
-                    copyArray(copy, b);
+                    //string copy[3][3];
+                    //copyArray(copy, b);
 
-                    int score = miniMax(copy, depth + 1, true);
+
+                    int score = miniMax(b, depth + 1, true);
+                    b[row][col] = "-";
 
                     if (score < bestscore) {
                         bestscore = score;
-                        aibm.y = row;
-                        aibm.x = col;
-                        cout << "optimal for AI move changed to " << aibm.y << aibm.x << " at depth " << depth << endl;
+                        
+                       
                     }
 
                 }
@@ -206,33 +216,33 @@ int checkGameState(string b[3][3]) {
         //Checks for all vertical winstates
         if (b[0][i] == "x" && b[1][i] == "x" && b[2][i] == "x") {
             //cout << "\nPlayer wins!\n";
-            return 1;
+            return -1;
         }
         if (b[0][i] == "o" && b[1][i] == "o" && b[2][i] == "o") {
             //cout << "\nThe AI has won!";
-            return -1;
+            return 1;
         }
 
         //checks for all horizontal winstates
         if (b[i][0] == "x" && b[i][1] == "x" && b[i][2] == "x") {
             //cout << "\nPlayer Wins!\n";
-            return 1;
+            return -1;
         }
         if (b[i][0] == "o" && b[i][1] == "o" && b[i][2] == "o") {
             //cout << "\nThe AI has won!";
-            return -1;
+            return 1;
         }
     }
     //checks for slanted winstates
-    if (b[0][0] == "x" && b[1][1] == "x" && b[2][2] == "x") { cout << "\nYou won!\n"; return true; }
-    if (b[0][0] == "o" && b[1][1] == "o" && b[2][2] == "o") { cout << "\nThe AI has won!\n"; return true; }
-    if (b[2][0] == "x" && b[1][1] == "x" && b[0][2] == "x") { cout << "\nYou won!\n"; return true; }
-    if (b[2][0] == "o" && b[1][1] == "o" && b[0][2] == "o") { cout << "\nThe AI has won!\n"; return true; }
+    if (b[0][0] == "x" && b[1][1] == "x" && b[2][2] == "x") {  return -1; }
+    if (b[0][0] == "o" && b[1][1] == "o" && b[2][2] == "o") {  return 1; }
+    if (b[2][0] == "x" && b[1][1] == "x" && b[0][2] == "x") {  return -1; }
+    if (b[2][0] == "o" && b[1][1] == "o" && b[0][2] == "o") {  return 1; }
 
     // If none of the the other win conditions have been met
     // and there are no empty spaces the game is tied
     if (!emptySpace) {
-        cout << "\nThe game is tied\n";
+        
         return 0;
     }
 
@@ -311,7 +321,7 @@ void showBoard(string b[3][3]){
 
     }
     cout << "\noptimal Move is: " << bm.y << bm.x << " for ai\n";
-    cout << "optimal Move is: " << aibm.y << aibm.x << " for player\n";
+    
     cout << "\n=============";
 }
 
